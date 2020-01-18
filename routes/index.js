@@ -1,8 +1,15 @@
+
+const allowCrossDomain = function (req, res, next){
+  res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Credentials','true');
+  next()
+}
+
 module.exports = function(app) {
-    app.get('/', function(req, res) {
-        res.redirect('/posts')
-    })
-    app.get('/currentUser', function(req, res){
+    app.use(allowCrossDomain)
+    app.get('/api/currentUser', function(req, res){
         res.send({
             name: 'xiazz',
             avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
@@ -66,11 +73,11 @@ module.exports = function(app) {
             phone: '0752-268888888',
           })
     })
-    app.use('/signup', require('./signup'))
-    app.use('/signin', require('./signin'))
-    app.use('/signout', require('./signout'))
-    app.use('/posts', require('./posts'))
-    app.use('/comments', require('./comments'))
+    app.use('/api/signup', require('./signup'))
+    app.use('/api/signin', require('./signin'))
+    app.use('/api/signout', require('./signout'))
+    app.use('/api/posts', require('./posts'))
+    app.use('/api/comments', require('./comments'))
 
     // 404 page
     app.use(function(req, res) {
