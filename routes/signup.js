@@ -23,6 +23,8 @@ router.post('/', function (req, res, next) {
     name: name,
     password: password
   }
+  result.statusText = 'error'
+  result.message = '用户名已被占用'
   res.send(result)
   //用户信息写入数据库
   // UserModel.create(user)
