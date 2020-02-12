@@ -10,7 +10,7 @@ const checkNotLogin = require('../middlewares/check').checkNotLogin
 // POST /api/signup 用户注册
 router.post('/', function (req, res, next) {
   let { name, password, confirm } = req.fields
-  const result = {
+  const response = {
     data: null,
     status: 200,
     statusText: 'success',
@@ -23,27 +23,24 @@ router.post('/', function (req, res, next) {
     name: name,
     password: password
   }
-  result.statusText = 'error'
-  result.message = '用户名已被占用'
-  res.send(result)
+
   //用户信息写入数据库
-  // UserModel.create(user)
-  //   .then(function (result) {
-  //     // 此 user 是插入 mongodb 后的值，包含 _id
-  //     user = result.ops[0]
-  //     // 删除密码这种敏感信息，将用户信息存入 session
-  //     delete user.password
-  //     req.session.user = user
-  //   })
-  //   .catch(function (e) {
-  //     if (e.message.match('duplicate key')) {
-  //       result.statusText = 'error'
-  //       result.message = '用户名已被占用'
-  //     }
-  //   })
-  //   .then(() => {
-  //     res.send(result)
-  //   })
+  UserModel.create(user)
+    .then(function (result) {
+      // 此 user 是插入 mongodb 后的值，包含 _id
+      user = result.ops[0]
+      // 删除密码这种敏感信息，将用户信息存入 session
+      delete user.password
+      req.session.user = user
+      res.send(response)
+    })
+    .catch(function (e) {
+      if (e.message.match('duplicate key')) {
+        response.statusText = 'error'
+        response.message = '用户名已被占用'
+        res.send(response)
+      }
+    })
 })
 
 module.exports = router
