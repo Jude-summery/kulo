@@ -8,7 +8,7 @@ const UserModel = require('../models/users')
 const checkNotLogin = require('../middlewares/check').checkNotLogin
 
 // POST /api/signup 用户注册
-router.post('/', function (req, res, next) {
+router.post('/', checkNotLogin, function (req, res, next) {
   let { name, password, confirm } = req.fields
   const response = {
     data: null,
