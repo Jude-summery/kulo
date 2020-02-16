@@ -40,7 +40,6 @@ router.post('/', checkNotLogin, function (req, res, next) {
       // 用户信息写入 session
       delete user.password
       req.session.user = user
-      // 跳转到主页
       res.cookie('USER', user.name)
       res.send(getResponse(null,200,'success','登录成功'))
     })

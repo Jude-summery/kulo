@@ -6,6 +6,7 @@ const router = express.Router()
 
 const UserModel = require('../models/users')
 const checkNotLogin = require('../middlewares/check').checkNotLogin
+const checkLogin = require('../middlewares/check').checkLogin
 
 // POST /api/signup 用户注册
 router.post('/', checkNotLogin, function (req, res, next) {
@@ -21,7 +22,11 @@ router.post('/', checkNotLogin, function (req, res, next) {
   // 待写入数据库的用户信息
   let user = {
     name: name,
-    password: password
+    password: password,
+    email: null,
+    nickname: null,
+    signature: null,
+    title: null
   }
 
   //用户信息写入数据库
@@ -32,6 +37,7 @@ router.post('/', checkNotLogin, function (req, res, next) {
       // 删除密码这种敏感信息，将用户信息存入 session
       delete user.password
       req.session.user = user
+      res.cookie('USER', user.name)
       res.send(response)
     })
     .catch(function (e) {
@@ -41,6 +47,28 @@ router.post('/', checkNotLogin, function (req, res, next) {
         res.send(response)
       }
     })
+})
+
+// POST /api/signup/update 用户信息管理
+router.post('/update', checkLogin, function (req, res, next) {
+  let { email, nickname, signature, title } = req.fields
+  const user = req.session.user
+  const response = {
+    data: null,
+    status: 200,
+    statusText: 'success',
+    message: ''
+  }
+  
+  // 待写入数据库的用户信息
+  let data = { email, nickname, signature, title }
+
+  //用户信息写入数据库
+  UserModel.updateUserByName(user, data)
+    .then(function () {
+      res.send(response)
+    })
+    .catch(next)
 })
 
 module.exports = router
