@@ -49,26 +49,4 @@ router.post('/', checkNotLogin, function (req, res, next) {
     })
 })
 
-// POST /api/signup/update 用户信息管理
-router.post('/update', checkLogin, function (req, res, next) {
-  let { email, nickname, signature, title } = req.fields
-  const user = req.session.user
-  const response = {
-    data: null,
-    status: 200,
-    statusText: 'success',
-    message: ''
-  }
-  
-  // 待写入数据库的用户信息
-  let data = { email, nickname, signature, title }
-
-  //用户信息写入数据库
-  UserModel.updateUserByName(user, data)
-    .then(function () {
-      res.send(response)
-    })
-    .catch(next)
-})
-
 module.exports = router
