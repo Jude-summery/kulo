@@ -5,28 +5,19 @@ const CommentModel = require('../models/comments')
 
 const checkLogin = require('../middlewares/check').checkLogin
 
-// GET /posts 所有用户或者特定用户的文章页
-// eg: GET /posts?author=xxx
+// GET /api/posts 所有用户或者特定用户的文章页
+// eg: GET /api/posts?author=xxx
 router.get('/', checkLogin, function (req, res, next) {
     const author = req.query.author
 
     PostModel.getPosts(author)
         .then(function (posts) {
-            res.render('posts', {
-                posts: posts
-            })
+            console.log(posts)
+            // res.render('posts', {
+            //     posts: posts
+            // })
         })
         .catch(next)
-})
-
-router.get('/test', function (req, res, next) {
-    Promise.resolve().then(
-        e => {
-            res.send({
-                a:1
-            })
-        }
-    ).catch(next)
 })
 
 // POST /posts/create 发表一篇文章
