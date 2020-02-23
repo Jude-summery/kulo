@@ -18,8 +18,8 @@ router.get('/get', checkLogin, function( req, res, next ) {
 
 // POST /api/user/update 用户信息管理
 router.post('/update', checkLogin, function (req, res, next) {
-  let { email, nickname, signature, title } = req.fields
-  const avatar = req.files.avatar.path.split(path.sep).pop()
+  let { email, nickname, signature, title, tags } = req.fields
+  const avatar = req.files.avatar ? req.files.avatar.path.split(path.sep).pop() : undefined
   const user = req.session.user
   const response = {
     data: null,
@@ -29,7 +29,13 @@ router.post('/update', checkLogin, function (req, res, next) {
   }
   
   // 待写入数据库的用户信息
-  let data = { email, nickname, signature, title, avatar }
+  const data = {}
+  const dataList = {email, nickname, signature, title, avatar, tags}
+  for(let key in dataList){
+    if(dataList[key]) {
+      data[key] = dataList[key]
+    }
+  }
 
   //用户信息写入数据库
   UserModel.updateUserByName(user, data)
@@ -43,8 +49,8 @@ router.post('/update', checkLogin, function (req, res, next) {
     })
 })
 
-// POST /api/user/update/avatar 用户信息管理
-router.post('/update/avatar', checkLogin, function (req, res, next) {
+// POST /api/user/avatar/update 用户信息管理
+router.post('/avatar/update', checkLogin, function (req, res, next) {
   const avatar = req.files.avatar.path.split(path.sep).pop()
   const user = req.session.user
   const response = {
@@ -69,8 +75,8 @@ router.post('/update/avatar', checkLogin, function (req, res, next) {
     })
 })
 
-// GET /api/user/get/avatar 获取用户头像
-router.get('/get/avatar', checkLogin, function (req, res, next) {
+// GET /api/user/avatar/get 获取用户头像
+router.get('/avatar/get', checkLogin, function (req, res, next) {
   const imgid = req.param('imgid')
   const file = path.join(__dirname, `../public/img/${imgid}`)
   res.download(file)
