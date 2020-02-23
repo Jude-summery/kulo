@@ -4,18 +4,17 @@ const PostModel = require('../models/posts')
 const CommentModel = require('../models/comments')
 
 const checkLogin = require('../middlewares/check').checkLogin
+const getResponse = require('../middlewares/getResponse').getResponse
 
 // GET /api/posts 所有用户或者特定用户的文章页
-// eg: GET /api/posts?author=xxx
+// eg: GET /api/posts
 router.get('/', checkLogin, function (req, res, next) {
-    const author = req.query.author
+    const author = req.session.user._id
 
     PostModel.getPosts(author)
         .then(function (posts) {
-            console.log(posts)
-            // res.render('posts', {
-            //     posts: posts
-            // })
+            const response = getResponse(posts)
+            res.send(response)
         })
         .catch(next)
 })
