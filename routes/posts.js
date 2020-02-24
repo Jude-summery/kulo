@@ -44,9 +44,9 @@ router.get('/create', checkLogin, function (req, res, next) {
     res.render('create')
 })
 
-// GET /posts/:postId单独一篇的文章页
-router.get('/:postId', function (req, res, next) {
-    const postId = req.params.postId
+// GET /api/posts/getOne单独一篇的文章页
+router.get('/getOne', function (req, res, next) {
+    const postId = req.query.postId
 
     Promise.all([
         PostModel.getPostById(postId), // 获取文章信息
@@ -57,13 +57,13 @@ router.get('/:postId', function (req, res, next) {
             const post = result[0]
             const comments = result[1]
             if(!post) {
-                throw new Error('该文章不存在')
+                res.send(getResponse(null))
+            } else {
+                res.send(getResponse({
+                    post: post,
+                    comments, comments
+                }))
             }
-
-            res.render('post', {
-                post: post,
-                comments, comments
-            })
         })
         .catch(next)
 })
