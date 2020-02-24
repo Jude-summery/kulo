@@ -24,20 +24,20 @@ Post.plugin('addCommentsCount', {
 })
 
 // 将 post 的 content 从 markdown 转换成 html
-Post.plugin('contentToHtml', {
-    afterFind: function(posts) {
-        return posts.map(function(post) {
-            post.content = marked(post.content)
-            return post
-        })
-    },
-    afterFindOne: function(post) {
-        if(post) {
-            post.content = marked(post.content)
-        }
-        return post
-    }
-})
+// Post.plugin('contentToHtml', {
+//     afterFind: function(posts) {
+//         return posts.map(function(post) {
+//             post.content = marked(post.content)
+//             return post
+//         })
+//     },
+//     afterFindOne: function(post) {
+//         if(post) {
+//             post.content = marked(post.content)
+//         }
+//         return post
+//     }
+// })
 
 module.exports = {
     // 创建一篇文章
@@ -52,7 +52,6 @@ module.exports = {
             .populate({ path: 'author', model: 'User' }) // populate() —— 进行连表查询
             .addCreatedAt()
             .addCommentsCount()
-            .contentToHtml()
             .exec()
     },
 
@@ -68,7 +67,6 @@ module.exports = {
             .sort({ _id: -1 })
             .addCreatedAt()
             .addCommentsCount()
-            .contentToHtml()
             .exec()
     },
 
