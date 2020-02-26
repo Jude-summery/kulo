@@ -1,4 +1,5 @@
 const config = require('config-lite')(__dirname)
+const path = require('path')
 
 const allowCrossDomain = function (req, res, next) {
 	res.header('Access-Control-Allow-Origin', 'http://localhost:8000');
@@ -10,6 +11,9 @@ const allowCrossDomain = function (req, res, next) {
 
 module.exports = function (app) {
 	app.use(allowCrossDomain)
+	app.get('/', function(req, res, next) {
+		res.render('index', { title: 'Express' });
+	})
 	app.use('/api/signup', require('./signup'))
 	app.use('/api/signin', require('./signin'))
 	app.use('/api/signout', require('./signout'))
