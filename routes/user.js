@@ -78,8 +78,11 @@ router.post('/avatar/update', checkLogin, function (req, res, next) {
 // GET /api/user/avatar/get 获取用户头像
 router.get('/avatar/get', checkLogin, function (req, res, next) {
   const imgid = req.param('imgid')
-  const file = path.join(__dirname, `../public/img/${imgid}`)
-  res.download(file)
+  if(imgid == 'undefined'){
+    res.download(path.join(__dirname, `../public/img/defaultAvatar.png`))
+  } else {
+    res.download(path.join(__dirname, `../public/img/${imgid}`), 'avatar.png', (error) => {})
+  }
 })
 
 module.exports = router
