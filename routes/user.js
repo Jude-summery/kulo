@@ -11,6 +11,7 @@ router.get('/get', checkLogin, function( req, res, next ) {
   const user = req.session.user
   UserModel.getUserByName(user.name)
   .then(result => {
+    delete result.password
     res.send(getResponse(result, 200, 'success', ''))
   })
   .catch(next)
