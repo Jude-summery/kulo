@@ -39,12 +39,7 @@ router.post('/create', checkLogin, function (req, res, next) {
     .catch(next)
 })
 
-// GET /posts/create 发表文章页
-router.get('/create', checkLogin, function (req, res, next) {
-    res.render('create')
-})
-
-// GET /api/posts/getOne单独一篇的文章页
+// GET /api/posts/getOne单独一篇的文章
 router.get('/getOne', function (req, res, next) {
     const postId = req.query.postId
 
@@ -68,29 +63,9 @@ router.get('/getOne', function (req, res, next) {
         .catch(next)
 })
 
-// GET /posts/:postId/edit 更新文章页
-router.get('/:postId/edit', checkLogin, function (req, res, next) {
-    const postId = req.params.postId
-    const author = req.session.user._id
-
-    PostModel.getRawPostById(postId)
-        .then(function(post){
-            if(!post) {
-                throw new Error('该文章不存在')
-            }
-            if(author.toString() !== post.author._id.toString()) {
-                throw new Error('权限不足')
-            }
-            res.render('edit', {
-                post: post
-            })
-        })
-        .catch(next)
-})
-
-// POST /posts/:postId/edit 更新一篇文章
-router.post('/:postId/edit', checkLogin, function (req, res, next) {
-    const postId = req.params.postId
+// POST /api/posts/edit 更新一篇文章
+router.post('/edit', checkLogin, function (req, res, next) {
+    const postId = req.fields.postId
     const author = req.session.user._id
     const title = req.fields.title
     const content = req.fields.content
@@ -104,32 +79,26 @@ router.post('/:postId/edit', checkLogin, function (req, res, next) {
             throw new Error('请填写内容')
         }
     } catch(e) {
-        req.flash('error', e.message)
-        return res.redirect('back')
+        throw e
     }
 
     PostModel.getRawPostById(postId)
         .then(function(post) {
-            if(!post) {
-                throw new Error('文章不存在')
-            }
             if(post.author._id.toString() !== author.toString()) {
                 throw new Error('没有权限')
             }
             PostModel.updatePostById(postId, { title: title, content: content })
                 .then(function() {
-                    req.flash('success', '编辑文章成功')
-                    // 编辑成功后跳转到上一页
-                    res.redirect(`/posts/${postId}`)
+                    res.send(getResponse(null))
                 })
                 .catch(next)
         })
 
 })
 
-// GET ss/:postId/remove 删除一篇文章
-router.get('/:postId/remove', checkLogin, function (req, res, next) {
-    const postId = req.params.postId
+// GET /aip/posts/remove 删除一篇文章
+router.post('/remove', checkLogin, function (req, res, next) {
+    const postId = req.fields.postId
     const author = req.session.user._id
 
     PostModel.getRawPostById(postId)
@@ -140,11 +109,9 @@ router.get('/:postId/remove', checkLogin, function (req, res, next) {
             if(post.author._id.toString() !== author.toString()) {
                 throw new Error('没有权限')
             }
-            PostModel.delPostById(postId)
+            PostModel.delPostById(postId, author)
                 .then(function(){
-                    req.flash('success', '删除文章成功')
-                    // 删除成功后跳转到主页
-                    res.redirect('/posts')
+                    res.send(getResponse(null))
                 })
                 .catch(next)
         })
